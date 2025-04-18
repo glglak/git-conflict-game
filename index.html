@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Conflict - A Git-themed Puzzle Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Git Conflict</h1>
+            <div class="stats">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="level">Level: <span id="level">1</span></div>
+                <div class="lives">Lives: <span id="lives">3</span></div>
+            </div>
+        </header>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="controls">
+            <div class="instructions">
+                <h2>Instructions</h2>
+                <p>Navigate the repository, resolve conflicts, and reach the commit zone!</p>
+                <ul>
+                    <li>Use arrow keys or WASD to move</li>
+                    <li>Enter conflict zones to solve merge puzzles</li>
+                    <li>Avoid bugs that will cost you points</li>
+                    <li>Collect power-ups to help you on your journey</li>
+                </ul>
+            </div>
+            <button id="startButton">Start Game</button>
+            <button id="restartButton" class="hidden">Restart Level</button>
+        </div>
+        
+        <div id="conflictModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Resolve Merge Conflict</h2>
+                <div class="conflict-container">
+                    <div class="code-display">
+                        <div id="conflictCode"></div>
+                    </div>
+                    <div class="conflict-options">
+                        <button id="acceptCurrent">Accept Current</button>
+                        <button id="acceptIncoming">Accept Incoming</button>
+                        <button id="mergeManually">Merge Manually</button>
+                    </div>
+                    <div id="manualMergeArea" class="hidden">
+                        <textarea id="mergeEditor"></textarea>
+                        <button id="submitMerge">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Game Over</h2>
+                <p>Your final score: <span id="finalScore">0</span></p>
+                <button id="newGameButton">New Game</button>
+            </div>
+        </div>
+
+        <div id="levelCompleteModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Level Complete!</h2>
+                <p>You've successfully resolved all conflicts and committed your changes.</p>
+                <p>Score: <span id="levelScore">0</span></p>
+                <button id="nextLevelButton">Next Level</button>
+            </div>
+        </div>
+
+        <div id="gameCompleteModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Congratulations!</h2>
+                <p>You've completed all levels of Git Conflict!</p>
+                <p>Final Score: <span id="completeScore">0</span></p>
+                <button id="restartGameButton">Play Again</button>
+            </div>
+        </div>
+
+        <div id="powerupNotification" class="notification hidden">
+            <p>Power-up collected: <span id="powerupName"></span></p>
+            <p id="powerupEffect"></p>
+        </div>
+    </div>
+    
+    <script src="assets.js"></script>
+    <script src="levels.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
