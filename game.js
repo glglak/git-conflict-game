@@ -709,6 +709,13 @@ window.addEventListener('keydown', handleKeyDown);
 
 // Initialize game when window loads
 window.addEventListener('load', () => {
+    // Make sure all modals are hidden initially
+    conflictModal.classList.add('hidden');
+    gameOverModal.classList.add('hidden');
+    levelCompleteModal.classList.add('hidden');
+    gameCompleteModal.classList.add('hidden');
+    
     // Just show the start button, don't auto-start
     startButton.classList.remove('hidden');
+    restartButton.classList.add('hidden');
 });
