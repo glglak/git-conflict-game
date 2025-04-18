@@ -307,3 +307,408 @@ function collectPowerup() {
     // Show notification
     showNotification(powerupType.name, powerupType.effect);
 }
+
+// Apply powerup effect
+function applyPowerup(type) {
+    const powerupType = POWERUP_TYPES[type];
+    
+    switch (type) {
+        case 0: // Rebase - remove all bugs
+            removeAllBugs();
+            break;
+        case 1: // Stash - immunity to bugs
+            addActivePowerup(type, powerupType.duration);
+            break;
+        case 2: // Cherry-pick - auto-resolve next conflict
+            gameState.autoResolveNextConflict = true;
+            break;
+    }
+}
+
+// Add an active powerup
+function addActivePowerup(type, duration) {
+    const newPowerup = { type, expiresAt: Date.now() + duration };
+    gameState.activePowerups.push(newPowerup);
+    
+    // Set timeout to remove the powerup
+    if (duration > 0) {
+        setTimeout(() => {
+            gameState.activePowerups = gameState.activePowerups.filter(p => p !== newPowerup);
+        }, duration);
+    }
+}
+
+// Check if player has a specific powerup
+function hasPowerupOfType(type) {
+    return gameState.activePowerups.some(p => p.type === type);
+}
+
+// Remove all bugs from the level
+function removeAllBugs() {
+    const { grid } = gameState;
+    
+    for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+            if (grid[y][x] === TILE_TYPES.BUG) {
+                grid[y][x] = TILE_TYPES.EMPTY;
+            }
+        }
+    }
+    
+    // Stop and restart bug movement with new positions
+    stopBugMovement();
+    startBugMovement();
+}
+
+// Handle level completion
+function completeLevel() {
+    // Pause game
+    pauseGame();
+    
+    // Calculate level score
+    const levelScoreValue = gameState.score + GAME_SETTINGS.pointsPerLevel;
+    gameState.score = levelScoreValue;
+    
+    // Update UI
+    levelScore.textContent = levelScoreValue;
+    updateScoreDisplay();
+    
+    // Check if all levels are complete
+    if (gameState.level >= LEVELS.length - 1) {
+        // Game complete
+        completeScore.textContent = gameState.score;
+        gameCompleteModal.classList.remove('hidden');
+    } else {
+        // Next level
+        levelCompleteModal.classList.remove('hidden');
+    }
+}
+
+// Start the next level
+function startNextLevel() {
+    // Hide modal
+    levelCompleteModal.classList.add('hidden');
+    
+    // Stop bug movement
+    stopBugMovement();
+    
+    // Advance to next level
+    gameState.level++;
+    
+    // Load level
+    const currentLevel = LEVELS[gameState.level];
+    gameState.grid = JSON.parse(JSON.stringify(currentLevel.grid)); // Deep copy
+    gameState.playerPosition = { ...currentLevel.playerStart };
+    gameState.solvedConflicts = [];
+    gameState.activePowerups = [];
+    gameState.autoResolveNextConflict = false;
+    
+    // Update UI
+    updateLevelDisplay();
+    
+    // Set canvas size based on grid dimensions
+    canvas.width = currentLevel.grid[0].length * GAME_SETTINGS.tileSize;
+    canvas.height = currentLevel.grid.length * GAME_SETTINGS.tileSize;
+    
+    // Resume game
+    resumeGame();
+    
+    // Start bug movement
+    startBugMovement();
+}
+
+// Game over
+function gameOver() {
+    // Pause game
+    pauseGame();
+    
+    // Stop bug movement
+    stopBugMovement();
+    
+    // Update UI
+    finalScore.textContent = gameState.score;
+    gameOverModal.classList.remove('hidden');
+}
+
+// Start bug movement
+function startBugMovement() {
+    const currentLevel = LEVELS[gameState.level];
+    
+    // Create a deep copy of bugs array for movement
+    const bugs = JSON.parse(JSON.stringify(currentLevel.bugs));
+    
+    // Set up movement intervals for each bug
+    bugs.forEach((bug, index) => {
+        const intervalId = setInterval(() => {
+            moveBug(bug, index);
+        }, GAME_SETTINGS.bugMovementInterval);
+        
+        gameState.bugIntervals.push(intervalId);
+    });
+}
+
+// Stop bug movement
+function stopBugMovement() {
+    // Clear all intervals
+    gameState.bugIntervals.forEach(intervalId => clearInterval(intervalId));
+    gameState.bugIntervals = [];
+}
+
+// Move a bug
+function moveBug(bug, bugIndex) {
+    if (!gameState.gameRunning) return;
+    
+    const { grid } = gameState;
+    const currentX = bug.x;
+    const currentY = bug.y;
+    
+    // Remove bug from current position
+    if (grid[currentY][currentX] === TILE_TYPES.BUG) {
+        grid[currentY][currentX] = TILE_TYPES.EMPTY;
+    }
+    
+    // Calculate new position based on movement pattern
+    let newX = currentX;
+    let newY = currentY;
+    
+    switch (bug.movementPattern) {
+        case 'horizontal':
+            // Move horizontally within range
+            bug.direction = bug.direction || 1; // 1 for right, -1 for left
+            newX = currentX + bug.direction;
+            
+            // Check if at edge of range
+            if (newX >= currentX + bug.range || newX <= currentX - bug.range ||
+                grid[newY][newX] !== TILE_TYPES.EMPTY) {
+                bug.direction *= -1; // Reverse direction
+                newX = currentX + bug.direction;
+            }
+            break;
+            
+        case 'vertical':
+            // Move vertically within range
+            bug.direction = bug.direction || 1; // 1 for down, -1 for up
+            newY = currentY + bug.direction;
+            
+            // Check if at edge of range
+            if (newY >= currentY + bug.range || newY <= currentY - bug.range ||
+                grid[newY][newX] !== TILE_TYPES.EMPTY) {
+                bug.direction *= -1; // Reverse direction
+                newY = currentY + bug.direction;
+            }
+            break;
+            
+        case 'circular':
+            // Move in a clockwise circle
+            bug.angle = bug.angle || 0;
+            bug.angle = (bug.angle + Math.PI/2) % (Math.PI * 2); // 90 degree turns
+            
+            const offsetX = Math.round(Math.cos(bug.angle));
+            const offsetY = Math.round(Math.sin(bug.angle));
+            
+            newX = currentX + offsetX;
+            newY = currentY + offsetY;
+            
+            // Check if new position is valid
+            if (grid[newY][newX] !== TILE_TYPES.EMPTY) {
+                bug.angle = (bug.angle + Math.PI/2) % (Math.PI * 2); // Try next direction
+                newX = currentX + Math.round(Math.cos(bug.angle));
+                newY = currentY + Math.round(Math.sin(bug.angle));
+            }
+            break;
+    }
+    
+    // Update bug position
+    bug.x = newX;
+    bug.y = newY;
+    
+    // Place bug at new position
+    if (grid[newY][newX] === TILE_TYPES.EMPTY) {
+        grid[newY][newX] = TILE_TYPES.BUG;
+        
+        // Check if player is at this position
+        if (gameState.playerPosition.x === newX && gameState.playerPosition.y === newY) {
+            if (!hasPowerupOfType(1)) { // If not immune
+                handleBugCollision();
+            }
+        }
+    }
+    
+    // Update the bugs array in the current level
+    const currentLevel = LEVELS[gameState.level];
+    currentLevel.bugs[bugIndex] = { ...bug };
+}
+
+// Handle keyboard input
+function handleKeyDown(event) {
+    if (!gameState.gameRunning) return;
+    
+    const { playerPosition, grid } = gameState;
+    let newX = playerPosition.x;
+    let newY = playerPosition.y;
+    
+    // Determine direction based on key pressed
+    switch (event.key) {
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+            newY--;
+            break;
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+            newY++;
+            break;
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+            newX--;
+            break;
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+            newX++;
+            break;
+    }
+    
+    // Check if new position is valid
+    if (isValidMove(newX, newY)) {
+        // Update player position
+        gameState.playerPosition = { x: newX, y: newY };
+        
+        // Check for collisions immediately
+        checkCollisions();
+    }
+}
+
+// Check if a move is valid
+function isValidMove(x, y) {
+    const { grid } = gameState;
+    
+    // Check bounds
+    if (y < 0 || y >= grid.length || x < 0 || x >= grid[0].length) {
+        return false;
+    }
+    
+    // Check if not a wall
+    return grid[y][x] !== TILE_TYPES.WALL;
+}
+
+// Pause the game
+function pauseGame() {
+    gameState.gameRunning = false;
+    if (gameState.animationFrameId) {
+        cancelAnimationFrame(gameState.animationFrameId);
+        gameState.animationFrameId = null;
+    }
+}
+
+// Resume the game
+function resumeGame() {
+    gameState.gameRunning = true;
+    gameLoop();
+}
+
+// Update score display
+function updateScoreDisplay() {
+    scoreDisplay.textContent = gameState.score;
+}
+
+// Update level display
+function updateLevelDisplay() {
+    levelDisplay.textContent = gameState.level + 1; // 1-based display
+}
+
+// Update lives display
+function updateLivesDisplay() {
+    livesDisplay.textContent = gameState.lives;
+}
+
+// Add to score (can be negative)
+function addScore(points) {
+    gameState.score += points;
+    if (gameState.score < 0) gameState.score = 0;
+    updateScoreDisplay();
+}
+
+// Show notification
+function showNotification(title, message) {
+    powerupName.textContent = title;
+    powerupEffect.textContent = message;
+    powerupNotification.classList.remove('hidden');
+    
+    // Hide after 5 seconds
+    setTimeout(() => {
+        powerupNotification.classList.add('hidden');
+    }, 5000);
+}
+
+// Event listeners
+startButton.addEventListener('click', () => {
+    startButton.classList.add('hidden');
+    restartButton.classList.remove('hidden');
+    initGame();
+});
+
+restartButton.addEventListener('click', () => {
+    stopBugMovement();
+    initGame();
+});
+
+// Conflict resolution buttons
+acceptCurrentButton.addEventListener('click', () => {
+    const { puzzle } = gameState.currentConflict;
+    resolveConflict(puzzle.currentCode);
+    conflictModal.classList.add('hidden');
+});
+
+acceptIncomingButton.addEventListener('click', () => {
+    const { puzzle } = gameState.currentConflict;
+    resolveConflict(puzzle.incomingCode);
+    conflictModal.classList.add('hidden');
+});
+
+mergeManuallyButton.addEventListener('click', () => {
+    const { puzzle } = gameState.currentConflict;
+    manualMergeArea.classList.remove('hidden');
+    mergeEditor.value = puzzle.currentCode;
+});
+
+submitMergeButton.addEventListener('click', () => {
+    const solution = mergeEditor.value;
+    const { puzzle } = gameState.currentConflict;
+    
+    // Simple check if the solution is correct
+    // In a real game, you'd want more sophisticated validation
+    if (solution.trim() === puzzle.correctSolution.trim()) {
+        // Award bonus points for correct manual merge
+        addScore(GAME_SETTINGS.pointsPerConflict * 0.5);
+    }
+    
+    resolveConflict(solution);
+    conflictModal.classList.add('hidden');
+});
+
+// Game over and level complete buttons
+newGameButton.addEventListener('click', () => {
+    gameOverModal.classList.add('hidden');
+    initGame();
+});
+
+nextLevelButton.addEventListener('click', () => {
+    startNextLevel();
+});
+
+restartGameButton.addEventListener('click', () => {
+    gameCompleteModal.classList.add('hidden');
+    initGame();
+});
+
+// Keyboard event listener
+window.addEventListener('keydown', handleKeyDown);
+
+// Initialize game when window loads
+window.addEventListener('load', () => {
+    // Just show the start button, don't auto-start
+    startButton.classList.remove('hidden');
+});
