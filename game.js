@@ -65,6 +65,12 @@ function initGame() {
         bugIntervals: []
     };
     
+    // Make sure all modals are hidden
+    conflictModal.classList.add('hidden');
+    gameOverModal.classList.add('hidden');
+    levelCompleteModal.classList.add('hidden');
+    gameCompleteModal.classList.add('hidden');
+    
     // Update UI
     updateScoreDisplay();
     updateLevelDisplay();
