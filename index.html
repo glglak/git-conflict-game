@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Conflict - A Git-themed Puzzle Game</title>
+    <title>Git Conflict - Simple Version</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,26 +20,17 @@
         <canvas id="gameCanvas"></canvas>
         
         <div class="controls">
-            <div class="instructions">
-                <h2>Instructions</h2>
-                <p>Navigate the repository, resolve conflicts, and reach the commit zone!</p>
-                <ul>
-                    <li>Use arrow keys or WASD to move</li>
-                    <li>Enter conflict zones to solve merge puzzles</li>
-                    <li>Avoid bugs that will cost you points</li>
-                    <li>Collect power-ups to help you on your journey</li>
-                </ul>
-            </div>
             <button id="startButton">Start Game</button>
             <button id="restartButton" class="hidden">Restart Level</button>
         </div>
         
+        <!-- Conflict Modal -->
         <div id="conflictModal" class="modal hidden">
             <div class="modal-content">
                 <h2>Resolve Merge Conflict</h2>
                 <div class="conflict-container">
                     <div class="code-display">
-                        <div id="conflictCode"></div>
+                        <p>You found a merge conflict!</p>
                     </div>
                     <div class="conflict-options">
                         <button id="acceptCurrent">Accept Current</button>
@@ -54,6 +45,7 @@
             </div>
         </div>
 
+        <!-- Game Over Modal -->
         <div id="gameOverModal" class="modal hidden">
             <div class="modal-content">
                 <h2>Game Over</h2>
@@ -62,35 +54,26 @@
             </div>
         </div>
 
+        <!-- Level Complete Modal -->
         <div id="levelCompleteModal" class="modal hidden">
             <div class="modal-content">
                 <h2>Level Complete!</h2>
-                <p>You've successfully resolved all conflicts and committed your changes.</p>
-                <p>Score: <span id="levelScore">0</span></p>
+                <p>Your score: <span id="levelScore">0</span></p>
                 <button id="nextLevelButton">Next Level</button>
             </div>
         </div>
 
+        <!-- Game Complete Modal -->
         <div id="gameCompleteModal" class="modal hidden">
             <div class="modal-content">
                 <h2>Congratulations!</h2>
-                <p>You've completed all levels of Git Conflict!</p>
                 <p>Final Score: <span id="completeScore">0</span></p>
                 <button id="restartGameButton">Play Again</button>
             </div>
         </div>
-
-        <div id="powerupNotification" class="notification hidden">
-            <p>Power-up collected: <span id="powerupName"></span></p>
-            <p id="powerupEffect"></p>
-        </div>
     </div>
     
-    <!-- Load game assets and constants first -->
-    <script src="assets.js"></script>
-    <script src="levels.js"></script>
-    
-    <!-- Load main game logic -->
-    <script src="main.js"></script>
+    <!-- Only load the simple game script -->
+    <script src="simple-game.js"></script>
 </body>
 </html>
