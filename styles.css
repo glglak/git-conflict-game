@@ -1,56 +1,47 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* Minimalist Git Conflict Game Styles */
 
 body {
     font-family: 'Courier New', monospace;
     background-color: #0d1117;
     color: #c9d1d9;
-    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
 }
 
 .game-container {
-    max-width: 1000px;
-    margin: 0 auto;
     padding: 20px;
+    text-align: center;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #30363d;
 }
 
 h1 {
     color: #58a6ff;
-    font-size: 2.5rem;
+    margin-bottom: 10px;
 }
 
 .stats {
     display: flex;
+    justify-content: center;
     gap: 20px;
     font-size: 1.2rem;
+    margin-bottom: 20px;
 }
 
 canvas {
-    background-color: #161b22;
     border: 2px solid #30363d;
     display: block;
-    margin: 0 auto;
-    border-radius: 5px;
+    margin: 0 auto 20px;
 }
 
 .controls {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+    margin: 20px 0;
 }
 
 button {
@@ -62,38 +53,15 @@ button {
     border-radius: 6px;
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    transition: background-color 0.2s;
+    margin: 5px;
 }
 
 button:hover {
     background-color: #2ea043;
 }
 
-button:active {
-    background-color: #238636;
-}
-
-.instructions {
-    background-color: #161b22;
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #30363d;
-    margin-bottom: 10px;
-    width: 100%;
-    max-width: 600px;
-}
-
-.instructions h2 {
-    color: #58a6ff;
-    margin-bottom: 10px;
-}
-
-.instructions ul {
-    margin-left: 20px;
-}
-
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* Modal styles */
@@ -103,28 +71,25 @@ button:active {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .modal-content {
-    background-color: #0d1117;
+    background-color: #161b22;
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid #30363d;
     width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-width: 500px;
+    text-align: center;
 }
 
 .modal h2 {
     color: #58a6ff;
     margin-bottom: 15px;
-    text-align: center;
 }
 
 .conflict-container {
@@ -134,13 +99,9 @@ button:active {
 }
 
 .code-display {
-    background-color: #161b22;
+    background-color: #0d1117;
     padding: 15px;
     border-radius: 6px;
-    border: 1px solid #30363d;
-    font-family: 'Courier New', monospace;
-    white-space: pre-wrap;
-    overflow-x: auto;
 }
 
 .conflict-options {
@@ -149,57 +110,15 @@ button:active {
     gap: 10px;
 }
 
-#manualMergeArea {
-    margin-top: 15px;
-}
-
 textarea {
     width: 100%;
-    height: 200px;
-    background-color: #161b22;
+    height: 100px;
+    background-color: #0d1117;
     color: #c9d1d9;
     border: 1px solid #30363d;
     border-radius: 6px;
     padding: 10px;
     font-family: 'Courier New', monospace;
     resize: vertical;
-}
-
-/* Highlighted code sections */
-.current-code {
-    color: #7ee787;
-}
-
-.incoming-code {
-    color: #f85149;
-}
-
-.conflict-marker {
-    color: #f0883e;
-    font-weight: bold;
-}
-
-/* Notification styles */
-.notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 15px;
-    max-width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    z-index: 50;
-    animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 4.7s forwards;
-}
-
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    margin-bottom: 10px;
 }
