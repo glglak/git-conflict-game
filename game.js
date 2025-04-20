@@ -47,8 +47,26 @@ const powerupNotification = document.getElementById('powerupNotification');
 const powerupName = document.getElementById('powerupName');
 const powerupEffect = document.getElementById('powerupEffect');
 
+// Hide all modals
+function hideAllModals() {
+    conflictModal.classList.add('hidden');
+    gameOverModal.classList.add('hidden');
+    levelCompleteModal.classList.add('hidden');
+    gameCompleteModal.classList.add('hidden');
+    powerupNotification.classList.add('hidden');
+}
+
 // Initialize game
 function initGame() {
+    // Stop any existing game processes
+    if (gameState.animationFrameId) {
+        cancelAnimationFrame(gameState.animationFrameId);
+    }
+    stopBugMovement();
+    
+    // Hide all modals
+    hideAllModals();
+    
     // Reset game state
     gameState = {
         level: 0,
@@ -64,12 +82,6 @@ function initGame() {
         grid: JSON.parse(JSON.stringify(LEVELS[0].grid)), // Deep copy
         bugIntervals: []
     };
-    
-    // Make sure all modals are hidden
-    conflictModal.classList.add('hidden');
-    gameOverModal.classList.add('hidden');
-    levelCompleteModal.classList.add('hidden');
-    gameCompleteModal.classList.add('hidden');
     
     // Update UI
     updateScoreDisplay();
@@ -649,43 +661,41 @@ function showNotification(title, message) {
     }, 5000);
 }
 
-// Event listeners
-startButton.addEventListener('click', () => {
+// Event listeners for game buttons
+startButton.addEventListener('click', function() {
     startButton.classList.add('hidden');
     restartButton.classList.remove('hidden');
     initGame();
 });
 
-restartButton.addEventListener('click', () => {
-    stopBugMovement();
+restartButton.addEventListener('click', function() {
     initGame();
 });
 
 // Conflict resolution buttons
-acceptCurrentButton.addEventListener('click', () => {
+acceptCurrentButton.addEventListener('click', function() {
     const { puzzle } = gameState.currentConflict;
     resolveConflict(puzzle.currentCode);
     conflictModal.classList.add('hidden');
 });
 
-acceptIncomingButton.addEventListener('click', () => {
+acceptIncomingButton.addEventListener('click', function() {
     const { puzzle } = gameState.currentConflict;
     resolveConflict(puzzle.incomingCode);
     conflictModal.classList.add('hidden');
 });
 
-mergeManuallyButton.addEventListener('click', () => {
+mergeManuallyButton.addEventListener('click', function() {
     const { puzzle } = gameState.currentConflict;
     manualMergeArea.classList.remove('hidden');
     mergeEditor.value = puzzle.currentCode;
 });
 
-submitMergeButton.addEventListener('click', () => {
+submitMergeButton.addEventListener('click', function() {
     const solution = mergeEditor.value;
     const { puzzle } = gameState.currentConflict;
     
     // Simple check if the solution is correct
-    // In a real game, you'd want more sophisticated validation
     if (solution.trim() === puzzle.correctSolution.trim()) {
         // Award bonus points for correct manual merge
         addScore(GAME_SETTINGS.pointsPerConflict * 0.5);
@@ -696,16 +706,16 @@ submitMergeButton.addEventListener('click', () => {
 });
 
 // Game over and level complete buttons
-newGameButton.addEventListener('click', () => {
+newGameButton.addEventListener('click', function() {
     gameOverModal.classList.add('hidden');
     initGame();
 });
 
-nextLevelButton.addEventListener('click', () => {
+nextLevelButton.addEventListener('click', function() {
     startNextLevel();
 });
 
-restartGameButton.addEventListener('click', () => {
+restartGameButton.addEventListener('click', function() {
     gameCompleteModal.classList.add('hidden');
     initGame();
 });
@@ -713,15 +723,26 @@ restartGameButton.addEventListener('click', () => {
 // Keyboard event listener
 window.addEventListener('keydown', handleKeyDown);
 
-// Initialize game when window loads
-window.addEventListener('load', () => {
-    // Make sure all modals are hidden initially
-    conflictModal.classList.add('hidden');
-    gameOverModal.classList.add('hidden');
-    levelCompleteModal.classList.add('hidden');
-    gameCompleteModal.classList.add('hidden');
+// Initialize the page when window loads
+window.addEventListener('load', function() {
+    console.log("Window loaded - initializing page");
     
-    // Just show the start button, don't auto-start
+    // Hide all modals first
+    hideAllModals();
+    
+    // Update UI elements visibility
     startButton.classList.remove('hidden');
     restartButton.classList.add('hidden');
+    
+    // Set initial canvas size for visual appeal
+    canvas.width = 800;
+    canvas.height = 400;
+    
+    // Draw something simple on the canvas to show it's working
+    ctx.fillStyle = '#161b22';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '24px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Press "Start Game" to begin', canvas.width / 2, canvas.height / 2);
 });
