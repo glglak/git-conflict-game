@@ -1,226 +1,256 @@
-// Git Conflict Game - Simple single-file implementation
-// This is a simplified version to ensure everything works correctly
+// Git Conflict Game - Simple working version
 
 // Constants
 const TILE_SIZE = 40;
-const GRID_WIDTH = 12;
-const GRID_HEIGHT = 9;
-const CANVAS_WIDTH = GRID_WIDTH * TILE_SIZE;
-const CANVAS_HEIGHT = GRID_HEIGHT * TILE_SIZE;
-
-// Simple game state
-let gameRunning = false;
-let score = 0;
-let level = 0;
-let playerX = 1;
-let playerY = 1;
-
-// Simple level design
-const levels = [
-  {
-    grid: [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
-      [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
-      [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 1, 0, 2, 0, 3, 0, 1, 0, 0, 1],
-      [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ],
-    playerStart: { x: 1, y: 1 }
-  }
-];
-
-// Tile colors
-const tileColors = {
-  0: '#161b22',    // Empty
-  1: '#30363d',    // Wall
-  2: '#f0883e',    // Conflict
-  3: '#f85149',    // Bug
-  4: '#58a6ff',    // Powerup
-  5: '#7ee787'     // Commit
+const COLORS = {
+  EMPTY: '#161b22',
+  WALL: '#30363d',
+  CONFLICT: '#f0883e',
+  BUG: '#f85149',
+  POWERUP: '#58a6ff',
+  COMMIT: '#7ee787',
+  PLAYER: '#c9d1d9'
 };
 
-// DOM elements
-let canvas;
-let ctx;
+// Game state
+let gameState = {};
 
-// Initialize the game when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded - Simple game initialization');
-  
-  // Create canvas if it doesn't exist
-  canvas = document.getElementById('gameCanvas');
-  if (!canvas) {
-    canvas = document.createElement('canvas');
-    canvas.id = 'gameCanvas';
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    document.body.appendChild(canvas);
-  } else {
-    // Set canvas size
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-  }
-  
-  ctx = canvas.getContext('2d');
-  
-  // Create start button if it doesn't exist
-  let startButton = document.getElementById('startButton');
-  if (!startButton) {
-    startButton = document.createElement('button');
-    startButton.id = 'startButton';
-    startButton.textContent = 'Start Game';
-    document.body.appendChild(startButton);
-  }
-  
-  // Add click handler to start button
-  startButton.onclick = startGame;
-  
-  // Draw initial screen
-  drawStartScreen();
-  
-  // Add keyboard controls
-  document.addEventListener('keydown', handleKeyDown);
-});
+// Simple level data
+const LEVEL_DATA = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
+  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+  [1, 0, 1, 0, 2, 0, 3, 0, 1, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
 
-// Draw start screen
-function drawStartScreen() {
-  ctx.fillStyle = '#161b22';
-  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  
-  ctx.fillStyle = 'white';
-  ctx.font = '24px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('Git Conflict Game', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
-  ctx.fillText('Press Start to Play', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
+// Reset game state
+function resetGame() {
+  gameState = {
+    grid: JSON.parse(JSON.stringify(LEVEL_DATA)),
+    playerX: 1,
+    playerY: 1,
+    score: 0,
+    level: 1,
+    lives: 3,
+    gameRunning: false
+  };
 }
 
-// Start the game
-function startGame() {
-  console.log('Starting game');
-  gameRunning = true;
-  score = 0;
-  level = 0;
-  playerX = levels[0].playerStart.x;
-  playerY = levels[0].playerStart.y;
+// Main initialization
+window.onload = function() {
+  console.log('Window loaded - Simple game init');
+  
+  const canvas = document.getElementById('gameCanvas');
+  if (!canvas) {
+    console.error('Canvas not found!');
+    return;
+  }
+  
+  const ctx = canvas.getContext('2d');
+  
+  // Set canvas size
+  canvas.width = LEVEL_DATA[0].length * TILE_SIZE;
+  canvas.height = LEVEL_DATA.length * TILE_SIZE;
+  
+  // Initialize game
+  resetGame();
+  
+  // Draw start screen
+  drawStartScreen(ctx, canvas);
+  
+  // Handle start button
+  const startButton = document.getElementById('startButton');
+  if (startButton) {
+    startButton.onclick = function() {
+      startGame(ctx, canvas);
+    };
+  } else {
+    console.error('Start button not found!');
+  }
+  
+  // Handle restart button
+  const restartButton = document.getElementById('restartButton');
+  if (restartButton) {
+    restartButton.onclick = function() {
+      startGame(ctx, canvas);
+    };
+  }
+  
+  // Handle keyboard
+  document.addEventListener('keydown', function(e) {
+    if (gameState.gameRunning) {
+      handleKeyDown(e, ctx, canvas);
+    }
+  });
+  
+  // Handle other buttons
+  setupModalButtons(ctx, canvas);
+};
+
+function drawStartScreen(ctx, canvas) {
+  // Clear canvas
+  ctx.fillStyle = COLORS.EMPTY;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw text
+  ctx.fillStyle = 'white';
+  ctx.font = '24px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('Git Conflict Game', canvas.width / 2, canvas.height / 3);
+  ctx.fillText('Press "Start Game" to begin', canvas.width / 2, canvas.height / 2);
+  
+  // Show start button and hide restart
+  const startButton = document.getElementById('startButton');
+  const restartButton = document.getElementById('restartButton');
+  startButton.classList.remove('hidden');
+  restartButton.classList.add('hidden');
+}
+
+function startGame(ctx, canvas) {
+  console.log('Starting game!');
+  
+  // Reset state
+  resetGame();
+  gameState.gameRunning = true;
   
   // Update UI
+  document.getElementById('score').textContent = gameState.score;
+  document.getElementById('level').textContent = gameState.level;
+  document.getElementById('lives').textContent = gameState.lives;
+  
+  // Hide start button and show restart
   const startButton = document.getElementById('startButton');
-  startButton.style.display = 'none';
+  const restartButton = document.getElementById('restartButton');
+  startButton.classList.add('hidden');
+  restartButton.classList.remove('hidden');
   
   // Start game loop
-  requestAnimationFrame(gameLoop);
+  gameLoop(ctx, canvas);
 }
 
-// Game loop
-function gameLoop() {
-  if (!gameRunning) return;
+function gameLoop(ctx, canvas) {
+  if (!gameState.gameRunning) return;
   
   // Clear canvas
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   // Draw grid
-  drawGrid();
+  drawGrid(ctx);
   
   // Draw player
-  drawPlayer();
+  drawPlayer(ctx);
   
-  // Request next frame
-  requestAnimationFrame(gameLoop);
+  // Continue loop
+  requestAnimationFrame(() => gameLoop(ctx, canvas));
 }
 
-// Draw the game grid
-function drawGrid() {
-  const grid = levels[level].grid;
+function drawGrid(ctx) {
+  const { grid } = gameState;
   
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       const tile = grid[y][x];
-      ctx.fillStyle = tileColors[tile];
-      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-      
-      // Draw symbols for special tiles
-      ctx.fillStyle = 'white';
-      ctx.font = '20px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      const centerX = x * TILE_SIZE + TILE_SIZE / 2;
-      const centerY = y * TILE_SIZE + TILE_SIZE / 2;
+      let color;
       
       switch (tile) {
-        case 2: ctx.fillText('!', centerX, centerY); break;
-        case 3: ctx.fillText('B', centerX, centerY); break;
-        case 4: ctx.fillText('P', centerX, centerY); break;
-        case 5: ctx.fillText('C', centerX, centerY); break;
+        case 0: color = COLORS.EMPTY; break;
+        case 1: color = COLORS.WALL; break;
+        case 2: color = COLORS.CONFLICT; break;
+        case 3: color = COLORS.BUG; break;
+        case 4: color = COLORS.POWERUP; break;
+        case 5: color = COLORS.COMMIT; break;
+      }
+      
+      ctx.fillStyle = color;
+      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      
+      // Draw symbols
+      if (tile > 1) {
+        ctx.fillStyle = 'white';
+        ctx.font = '20px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const centerX = x * TILE_SIZE + TILE_SIZE / 2;
+        const centerY = y * TILE_SIZE + TILE_SIZE / 2;
+        
+        let symbol;
+        switch (tile) {
+          case 2: symbol = '!'; break;
+          case 3: symbol = '🐞'; break;
+          case 4: symbol = '⚡'; break;
+          case 5: symbol = '✓'; break;
+        }
+        
+        if (symbol) {
+          ctx.fillText(symbol, centerX, centerY);
+        }
       }
     }
   }
 }
 
-// Draw the player
-function drawPlayer() {
-  ctx.fillStyle = '#c9d1d9';
+function drawPlayer(ctx) {
+  const { playerX, playerY } = gameState;
+  ctx.fillStyle = COLORS.PLAYER;
   ctx.beginPath();
   ctx.arc(
     playerX * TILE_SIZE + TILE_SIZE / 2,
     playerY * TILE_SIZE + TILE_SIZE / 2,
-    TILE_SIZE * 0.3,
+    TILE_SIZE * 0.35,
     0,
     Math.PI * 2
   );
   ctx.fill();
 }
 
-// Handle keyboard input
-function handleKeyDown(event) {
-  if (!gameRunning) return;
+function handleKeyDown(e, ctx, canvas) {
+  let newX = gameState.playerX;
+  let newY = gameState.playerY;
   
-  let newX = playerX;
-  let newY = playerY;
-  
-  switch (event.key) {
+  switch (e.key) {
     case 'ArrowUp':
     case 'w':
+    case 'W':
       newY--;
       break;
     case 'ArrowDown':
     case 's':
+    case 'S':
       newY++;
       break;
     case 'ArrowLeft':
     case 'a':
+    case 'A':
       newX--;
       break;
     case 'ArrowRight':
     case 'd':
+    case 'D':
       newX++;
       break;
   }
   
-  // Check if move is valid
   if (isValidMove(newX, newY)) {
-    playerX = newX;
-    playerY = newY;
-    checkCollisions();
+    gameState.playerX = newX;
+    gameState.playerY = newY;
+    checkCollision(ctx, canvas);
   }
 }
 
-// Check if a move is valid
 function isValidMove(x, y) {
-  const grid = levels[level].grid;
-  if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) {
-    return false;
-  }
-  return grid[y][x] !== 1; // Can move if not a wall
+  const { grid } = gameState;
+  if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) return false;
+  return grid[y][x] !== 1; // not a wall
 }
 
-// Check for collisions
-function checkCollisions() {
-  const grid = levels[level].grid;
+function checkCollision(ctx, canvas) {
+  const { grid, playerX, playerY } = gameState;
   const tile = grid[playerY][playerX];
   
   switch (tile) {
@@ -234,43 +264,119 @@ function checkCollisions() {
       handlePowerup();
       break;
     case 5: // Commit
-      handleCommit();
+      handleCommit(ctx, canvas);
       break;
   }
 }
 
-// Handle conflict
 function handleConflict() {
-  alert('You hit a conflict! Resolve it!');
-  score += 100;
-  // Remove conflict from grid
-  levels[level].grid[playerY][playerX] = 0;
+  gameState.gameRunning = false;
+  const modal = document.getElementById('conflictModal');
+  modal.classList.remove('hidden');
 }
 
-// Handle bug
 function handleBug() {
-  alert('Oh no! A bug!');
-  score -= 50;
-  // Reset player position
-  playerX = levels[level].playerStart.x;
-  playerY = levels[level].playerStart.y;
-}
-
-// Handle powerup
-function handlePowerup() {
-  alert('Power-up collected!');
-  score += 50;
-  // Remove powerup from grid
-  levels[level].grid[playerY][playerX] = 0;
-}
-
-// Handle reaching commit
-function handleCommit() {
-  alert('Level Complete! Score: ' + score);
-  gameRunning = false;
+  gameState.lives--;
+  gameState.score = Math.max(0, gameState.score - 50);
   
-  // Show start button again
-  const startButton = document.getElementById('startButton');
-  startButton.style.display = 'block';
-  startButton.textContent = 'Play Again';
+  // Update UI
+  document.getElementById('lives').textContent = gameState.lives;
+  document.getElementById('score').textContent = gameState.score;
+  
+  // Reset position
+  gameState.playerX = 1;
+  gameState.playerY = 1;
+  
+  if (gameState.lives <= 0) {
+    gameOver();
+  }
+}
+
+function handlePowerup() {
+  gameState.score += 50;
+  gameState.grid[gameState.playerY][gameState.playerX] = 0;
+  document.getElementById('score').textContent = gameState.score;
+}
+
+function handleCommit(ctx, canvas) {
+  gameState.gameRunning = false;
+  gameState.score += 500;
+  const modal = document.getElementById('levelCompleteModal');
+  document.getElementById('levelScore').textContent = gameState.score;
+  modal.classList.remove('hidden');
+}
+
+function gameOver() {
+  gameState.gameRunning = false;
+  const modal = document.getElementById('gameOverModal');
+  document.getElementById('finalScore').textContent = gameState.score;
+  modal.classList.remove('hidden');
+}
+
+function setupModalButtons(ctx, canvas) {
+  // Conflict resolution
+  const acceptCurrentButton = document.getElementById('acceptCurrent');
+  if (acceptCurrentButton) {
+    acceptCurrentButton.onclick = function() {
+      resolveConflict();
+    };
+  }
+  
+  const acceptIncomingButton = document.getElementById('acceptIncoming');
+  if (acceptIncomingButton) {
+    acceptIncomingButton.onclick = function() {
+      resolveConflict();
+    };
+  }
+  
+  const mergeManuallyButton = document.getElementById('mergeManually');
+  if (mergeManuallyButton) {
+    mergeManuallyButton.onclick = function() {
+      document.getElementById('manualMergeArea').classList.remove('hidden');
+    };
+  }
+  
+  const submitMergeButton = document.getElementById('submitMerge');
+  if (submitMergeButton) {
+    submitMergeButton.onclick = function() {
+      resolveConflict();
+    };
+  }
+  
+  function resolveConflict() {
+    gameState.score += 100;
+    gameState.grid[gameState.playerY][gameState.playerX] = 0;
+    document.getElementById('score').textContent = gameState.score;
+    document.getElementById('conflictModal').classList.add('hidden');
+    document.getElementById('manualMergeArea').classList.add('hidden');
+    gameState.gameRunning = true;
+  }
+  
+  // Game over
+  const newGameButton = document.getElementById('newGameButton');
+  if (newGameButton) {
+    newGameButton.onclick = function() {
+      document.getElementById('gameOverModal').classList.add('hidden');
+      startGame(ctx, canvas);
+    };
+  }
+  
+  // Level complete
+  const nextLevelButton = document.getElementById('nextLevelButton');
+  if (nextLevelButton) {
+    nextLevelButton.onclick = function() {
+      document.getElementById('levelCompleteModal').classList.add('hidden');
+      // For now, just restart the same level
+      startGame(ctx, canvas);
+    };
+  }
+  
+  // Game complete
+  const restartGameButton = document.getElementById('restartGameButton');
+  if (restartGameButton) {
+    restartGameButton.onclick = function() {
+      document.getElementById('gameCompleteModal').classList.add('hidden');
+      startGame(ctx, canvas);
+    };
+  }
 }
