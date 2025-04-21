@@ -12,9 +12,101 @@ body {
     min-height: 100vh;
 }
 
+.main-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+}
+
+/* Side Panel Styles */
+.side-panel {
+    background-color: #161b22;
+    border-right: 2px solid #30363d;
+    width: 250px;
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    transition: transform 0.3s ease;
+}
+
+.panel-section {
+    margin-bottom: 25px;
+}
+
+.panel-section h3 {
+    color: #58a6ff;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 5px;
+}
+
+.icon-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.icon-list li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.player-icon {
+    background-color: #c9d1d9;
+    color: #0d1117;
+}
+
+.conflict-icon {
+    background-color: #f0883e;
+}
+
+.bug-icon {
+    background-color: #f85149;
+}
+
+.powerup-icon {
+    background-color: #58a6ff;
+}
+
+.commit-icon {
+    background-color: #7ee787;
+}
+
+.toggle-panel-button {
+    position: absolute;
+    top: 20px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+/* Hide panel on smaller screens or when toggled */
+.side-panel.hidden {
+    transform: translateX(-100%);
+}
+
 .game-container {
     padding: 20px;
     text-align: center;
+    flex-grow: 1;
+    position: relative;
 }
 
 header {
@@ -24,6 +116,12 @@ header {
 h1 {
     color: #58a6ff;
     margin-bottom: 10px;
+}
+
+h2 {
+    color: #58a6ff;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
 .stats {
@@ -54,10 +152,19 @@ button {
     cursor: pointer;
     font-family: 'Courier New', monospace;
     margin: 5px;
+    transition: background-color 0.2s ease;
 }
 
 button:hover {
     background-color: #2ea043;
+}
+
+#helpButton {
+    background-color: #58a6ff;
+}
+
+#helpButton:hover {
+    background-color: #79b8ff;
 }
 
 .hidden {
@@ -85,6 +192,8 @@ button:hover {
     width: 90%;
     max-width: 500px;
     text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid #30363d;
 }
 
 .modal h2 {
@@ -102,6 +211,8 @@ button:hover {
     background-color: #0d1117;
     padding: 15px;
     border-radius: 6px;
+    text-align: left;
+    border: 1px solid #30363d;
 }
 
 .conflict-options {
@@ -121,4 +232,64 @@ textarea {
     font-family: 'Courier New', monospace;
     resize: vertical;
     margin-bottom: 10px;
+}
+
+/* Game Over Modal Styling */
+#gameOverModal .modal-content {
+    border-color: #f85149;
+}
+
+#gameOverModal h2 {
+    color: #f85149;
+}
+
+#gameOverMessage {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .side-panel {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        border-right: none;
+        border-bottom: 2px solid #30363d;
+    }
+    
+    .toggle-panel-button {
+        top: auto;
+        bottom: -15px;
+        right: 20px;
+        transform: rotate(90deg);
+    }
+    
+    .side-panel.hidden {
+        transform: translateY(-100%);
+    }
+}
+
+/* Notification styling */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 15px;
+    color: #c9d1d9;
+    z-index: 2000;
+    max-width: 300px;
+    animation: slide-in 0.3s ease-out forwards;
+}
+
+@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
