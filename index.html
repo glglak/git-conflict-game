@@ -7,68 +7,108 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="game-container">
-        <header>
-            <h1>Git Conflict</h1>
-            <div class="stats">
-                <div class="score">Score: <span id="score">0</span></div>
-                <div class="level">Level: <span id="level">1</span></div>
-                <div class="lives">Lives: <span id="lives">3</span></div>
+    <div class="main-container">
+        <!-- New Side Panel -->
+        <div class="side-panel" id="sidePanel">
+            <h2>Git Conflict Guide</h2>
+            <div class="panel-section">
+                <h3>Icons</h3>
+                <ul class="icon-list">
+                    <li><span class="icon player-icon">●</span> Player - Your character</li>
+                    <li><span class="icon conflict-icon">!</span> Conflict - Needs resolution</li>
+                    <li><span class="icon bug-icon">🐞</span> Bug - Avoid these!</li>
+                    <li><span class="icon powerup-icon">⚡</span> Power-up - Special ability</li>
+                    <li><span class="icon commit-icon">✓</span> Commit - Level complete</li>
+                </ul>
             </div>
-        </header>
-        
-        <canvas id="gameCanvas"></canvas>
-        
-        <div class="controls">
-            <button id="startButton">Start Game</button>
-            <button id="restartButton" class="hidden">Restart Level</button>
+            <div class="panel-section">
+                <h3>Controls</h3>
+                <p>Movement: Arrow keys or WASD</p>
+            </div>
+            <div class="panel-section">
+                <h3>Power-ups</h3>
+                <ul>
+                    <li><strong>Rebase</strong>: Removes bugs temporarily</li>
+                    <li><strong>Stash</strong>: Gives an extra life</li>
+                    <li><strong>Cherry-pick</strong>: Auto-resolves next conflict</li>
+                </ul>
+            </div>
+            <div class="panel-section">
+                <h3>Levels</h3>
+                <ol>
+                    <li><strong>Feature Branch</strong>: Basic introduction</li>
+                    <li><strong>Merge Request</strong>: Multiple conflicts</li>
+                    <li><strong>Rebase Hell</strong>: Complex maze</li>
+                </ol>
+            </div>
+            <button id="togglePanelButton" class="toggle-panel-button">⇄</button>
         </div>
-        
-        <!-- Conflict Modal -->
-        <div id="conflictModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Resolve Merge Conflict</h2>
-                <div class="conflict-container">
-                    <div class="code-display">
-                        <p>You found a merge conflict!</p>
-                    </div>
-                    <div class="conflict-options">
-                        <button id="acceptCurrent">Accept Current</button>
-                        <button id="acceptIncoming">Accept Incoming</button>
-                        <button id="mergeManually">Merge Manually</button>
-                    </div>
-                    <div id="manualMergeArea" class="hidden">
-                        <textarea id="mergeEditor"></textarea>
-                        <button id="submitMerge">Submit</button>
+
+        <div class="game-container">
+            <header>
+                <h1>Git Conflict</h1>
+                <div class="stats">
+                    <div class="score">Score: <span id="score">0</span></div>
+                    <div class="level">Level: <span id="level">1</span></div>
+                    <div class="lives">Lives: <span id="lives">3</span></div>
+                </div>
+            </header>
+            
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="controls">
+                <button id="startButton">Start Game</button>
+                <button id="restartButton" class="hidden">Restart Level</button>
+                <button id="helpButton">Help</button>
+            </div>
+            
+            <!-- Conflict Modal -->
+            <div id="conflictModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Resolve Merge Conflict</h2>
+                    <div class="conflict-container">
+                        <div class="code-display" id="conflictCode">
+                            <p>You found a merge conflict!</p>
+                        </div>
+                        <div class="conflict-options">
+                            <button id="acceptCurrent">Accept Current</button>
+                            <button id="acceptIncoming">Accept Incoming</button>
+                            <button id="mergeManually">Merge Manually</button>
+                        </div>
+                        <div id="manualMergeArea" class="hidden">
+                            <textarea id="mergeEditor"></textarea>
+                            <button id="submitMerge">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Game Over Modal -->
-        <div id="gameOverModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Game Over</h2>
-                <p>Your final score: <span id="finalScore">0</span></p>
-                <button id="newGameButton">New Game</button>
+            <!-- Game Over Modal -->
+            <div id="gameOverModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Game Over</h2>
+                    <p id="gameOverMessage">You hit a bug and lost all your lives!</p>
+                    <p>Your final score: <span id="finalScore">0</span></p>
+                    <button id="newGameButton">New Game</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Level Complete Modal -->
-        <div id="levelCompleteModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Level Complete!</h2>
-                <p>Your score: <span id="levelScore">0</span></p>
-                <button id="nextLevelButton">Next Level</button>
+            <!-- Level Complete Modal -->
+            <div id="levelCompleteModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Level Complete!</h2>
+                    <p>Your score: <span id="levelScore">0</span></p>
+                    <button id="nextLevelButton">Next Level</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Game Complete Modal -->
-        <div id="gameCompleteModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Congratulations!</h2>
-                <p>Final Score: <span id="completeScore">0</span></p>
-                <button id="restartGameButton">Play Again</button>
+            <!-- Game Complete Modal -->
+            <div id="gameCompleteModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>Congratulations!</h2>
+                    <p>Final Score: <span id="completeScore">0</span></p>
+                    <button id="restartGameButton">Play Again</button>
+                </div>
             </div>
         </div>
     </div>
