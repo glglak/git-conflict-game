@@ -246,6 +246,8 @@ textarea {
 #gameOverMessage {
     margin-bottom: 20px;
     font-size: 1.1rem;
+    color: #f85149;
+    font-weight: bold;
 }
 
 /* Media query for smaller screens */
@@ -274,7 +276,7 @@ textarea {
     }
 }
 
-/* Notification styling */
+/* Enhanced Notification styling */
 .notification {
     position: fixed;
     top: 20px;
@@ -286,10 +288,52 @@ textarea {
     color: #c9d1d9;
     z-index: 2000;
     max-width: 300px;
-    animation: slide-in 0.3s ease-out forwards;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s, transform 0.3s;
 }
 
-@keyframes slide-in {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+/* Error modal styling */
+#errorModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+#errorModal.hidden {
+    display: none;
+}
+
+#errorModal .modal-content {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+}
+
+#errorModal h2 {
+    margin-top: 0;
+    color: #f85149;
+}
+
+#errorModal button {
+    background-color: #238636;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+#errorModal button:hover {
+    background-color: #2ea043;
 }
