@@ -1,63 +1,55 @@
 # Git Conflict Game
 
-A multi-level puzzle game where players navigate through a repository and resolve merge conflicts.
+A fun game that teaches Git concepts through gameplay! Navigate through levels, resolve conflicts, avoid bugs, and earn power-ups.
 
-## Game Concept
+## Enhanced Features
 
-Play as a developer navigating through different codebases. Resolve merge conflicts, avoid bugs, and reach the commit zone to complete each level.
+The game has been improved with:
 
-## Features
+1. **Comprehensive error handling** with try/catch blocks throughout the code
+   - Prevents the game from crashing on unexpected errors
+   - Provides informative error messages to users
 
-- Three levels with increasing difficulty
-- Moving bugs that patrol areas
-- Power-ups with special effects (Rebase, Stash, Cherry-pick)
-- Score and lives system
-- Unique conflict puzzles for each level
-- Progressive level system
+2. **Improved notification system** with styling and animations
+   - Better visual feedback
+   - Notifications fade out after displaying
 
-## Levels
+3. **Random game over messages** related to Git concepts
+   - Makes the game more engaging and educational
+   - Ties into the Git theme of the game
 
-1. **Feature Branch** - Simple maze with one conflict and one bug
-2. **Merge Request** - More complex layout with multiple conflicts and bugs
-3. **Rebase Hell** - Large maze with multiple challenges and power-ups
+4. **Cherry-pick powerup** for auto-resolving conflicts
+   - New gameplay mechanic
+   - Allows automatic conflict resolution
+
+5. **Better UI feedback** when bugs are encountered
+   - Clear messaging about lives remaining
+   - More informative error modals
 
 ## How to Play
 
-1. Open the game at: https://glglak.github.io/git-conflict-game/
-2. Click "Start Game" to begin
-3. Use arrow keys or WASD to move your character
-4. Enter conflict zones (!) to solve merge puzzles
-5. Avoid bugs (🐞) that will cost you lives
-6. Collect power-ups (⚡) for bonus points and special abilities
-7. Reach the commit zone (✓) to complete the level
+1. **Objective**: Navigate through the maze, resolve conflicts, and reach the commit (green checkmark) while avoiding bugs.
 
-## Power-ups
+2. **Controls**: Use WASD or arrow keys to move.
 
-- **Rebase**: Temporarily removes all bugs from the level
-- **Stash**: Grants an extra life
-- **Cherry-pick**: Automatically resolves the next conflict
+3. **Game Elements**:
+   - **Player**: You control the white circle
+   - **Conflicts**: Orange tiles with ! marks - Must be resolved
+   - **Bugs**: Red tiles with bug icons - Avoid these!
+   - **Power-ups**: Blue tiles with lightning icons - Collect for special abilities
+   - **Commit**: Green tile with checkmark - Reach this to complete the level
 
-## Technical Details
+4. **Power-ups**:
+   - **Rebase**: Removes all bugs temporarily
+   - **Stash**: Gives an extra life
+   - **Cherry-pick**: Auto-resolves next conflict
 
-Built with vanilla JavaScript, HTML5 Canvas, and CSS. No external dependencies required.
+## Implementation Details
 
-## Enhanced Implementation
+The game is implemented using vanilla JavaScript with HTML5 Canvas for rendering. The enhanced version uses:
 
-This version includes:
-- Multiple levels with unique designs
-- Moving bug enemies
-- Power-up system
-- Progressive difficulty
-- Score persistence across levels
+- Self-healing error handling to prevent crashes
+- Enhanced UI features with transitions and animations
+- Improved game mechanics with additional power-up effects
 
-## Target Audience
-
-Designed for developers and technical users who are familiar with Git concepts like merge conflicts and version control workflows.
-
-## Development
-
-This game was built as a fun way to demonstrate Git concepts in an interactive format.
-
----
-
-Enjoy the game and may your merges always be conflict-free!
+Enjoy playing and learning Git concepts at the same time!
