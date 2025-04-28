@@ -47,6 +47,14 @@ const powerupNotification = document.getElementById('powerupNotification');
 const powerupName = document.getElementById('powerupName');
 const powerupEffect = document.getElementById('powerupEffect');
 
+// Settings elements
+const settingsButton = document.getElementById('settingsButton');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const soundToggle = document.getElementById('soundToggle');
+const difficultySelect = document.getElementById('difficultySelect');
+const themeSelect = document.getElementById('themeSelect');
+
 // Hide all modals
 function hideAllModals() {
     conflictModal.classList.add('hidden');
@@ -54,6 +62,46 @@ function hideAllModals() {
     levelCompleteModal.classList.add('hidden');
     gameCompleteModal.classList.add('hidden');
     powerupNotification.classList.add('hidden');
+    settingsModal.classList.add('hidden');
+}
+
+// Game settings
+let gameSettings = {
+    difficulty: 'normal',
+    theme: 'dark',
+    bugSpeed: 1000,
+    powerupDuration: 1
+};
+
+// Apply theme
+function applyTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    gameSettings.theme = themeName;
+    localStorage.setItem('theme', themeName);
+}
+
+// Apply difficulty
+function applyDifficulty(difficulty) {
+    gameSettings.difficulty = difficulty;
+    switch (difficulty) {
+        case 'easy':
+            gameSettings.bugSpeed = 1500;
+            gameSettings.powerupDuration = 1.5;
+            break;
+        case 'normal':
+            gameSettings.bugSpeed = 1000;
+            gameSettings.powerupDuration = 1;
+            break;
+        case 'hard':
+            gameSettings.bugSpeed = 600;
+            gameSettings.powerupDuration = 0.7;
+            break;
+    }
+    localStorage.setItem('difficulty', difficulty);
+    if (gameState.gameRunning) {
+        stopBugMovement();
+        startBugMovement();
+    }
 }
 
 // Initialize game
@@ -82,6 +130,9 @@ function initGame() {
         grid: JSON.parse(JSON.stringify(LEVELS[0].grid)), // Deep copy
         bugIntervals: []
     };
+    
+    // Play start sound
+    GameSounds.play('win');
     
     // Update UI
     updateScoreDisplay();
@@ -561,6 +612,11 @@ function moveBug(bug, bugIndex) {
 function handleKeyDown(event) {
     if (!gameState.gameRunning) return;
     
+    // Prevent default browser scrolling for arrow keys
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+        event.preventDefault();
+    }
+    
     const { playerPosition, grid } = gameState;
     let newX = playerPosition.x;
     let newY = playerPosition.y;
@@ -660,6 +716,46 @@ function showNotification(title, message) {
         powerupNotification.classList.add('hidden');
     }, 5000);
 }
+
+// Settings event listeners
+settingsButton.addEventListener('click', () => {
+    settingsModal.classList.remove('hidden');
+    pauseGame();
+});
+
+closeSettings.addEventListener('click', () => {
+    settingsModal.classList.add('hidden');
+    resumeGame();
+});
+
+soundToggle.addEventListener('change', () => {
+    const isEnabled = GameSounds.toggle();
+    soundToggle.checked = isEnabled;
+    localStorage.setItem('soundEnabled', isEnabled);
+});
+
+difficultySelect.addEventListener('change', (e) => {
+    applyDifficulty(e.target.value);
+});
+
+themeSelect.addEventListener('change', (e) => {
+    applyTheme(e.target.value);
+});
+
+// Load settings from localStorage
+window.addEventListener('load', () => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedDifficulty = localStorage.getItem('difficulty') || 'normal';
+    const savedSound = localStorage.getItem('soundEnabled') !== 'false';
+    
+    themeSelect.value = savedTheme;
+    difficultySelect.value = savedDifficulty;
+    soundToggle.checked = savedSound;
+    
+    applyTheme(savedTheme);
+    applyDifficulty(savedDifficulty);
+    if (!savedSound) GameSounds.toggle();
+});
 
 // Event listeners for game buttons
 startButton.addEventListener('click', function() {

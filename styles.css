@@ -292,6 +292,140 @@ textarea {
     transition: opacity 0.3s, transform 0.3s;
 }
 
+/* Settings styling */
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section h3 {
+    color: #58a6ff;
+    margin-bottom: 10px;
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #30363d;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #c9d1d9;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #58a6ff;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Theme styles */
+select {
+    background-color: #30363d;
+    color: #c9d1d9;
+    border: 1px solid #58a6ff;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+select:focus {
+    outline: none;
+    border-color: #1f6feb;
+}
+
+/* Theme: Light */
+[data-theme="light"] {
+    --bg-color: #f0f6fc;
+    --text-color: #24292e;
+    --wall-color: #d1d5da;
+    --conflict-color: #f97583;
+    --bug-color: #d73a49;
+    --powerup-color: #2188ff;
+    --commit-color: #28a745;
+}
+
+/* Theme: Matrix */
+[data-theme="matrix"] {
+    --bg-color: #000000;
+    --text-color: #00ff00;
+    --wall-color: #003300;
+    --conflict-color: #ff0000;
+    --bug-color: #ff3300;
+    --powerup-color: #00ffff;
+    --commit-color: #33ff33;
+}
+
+/* Notification styling */
+.notification .modal-content {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    min-width: 200px;
+    background-color: #238636;
+    color: white;
+    padding: 15px;
+    border-radius: 6px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification .modal-content h3 {
+    color: white;
+    margin: 0 0 5px 0;
+}
+
+.notification .modal-content p {
+    margin: 0;
+}
+
 /* Error modal styling */
 #errorModal {
     position: fixed;

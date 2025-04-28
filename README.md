@@ -6,25 +6,32 @@ A fun game that teaches Git concepts through gameplay! Navigate through levels, 
 
 The game has been improved with:
 
-1. **Comprehensive error handling** with try/catch blocks throughout the code
-   - Prevents the game from crashing on unexpected errors
-   - Provides informative error messages to users
+1. **Sound Effects** for immersive gameplay
+   - Movement, conflict resolution, power-up collection
+   - Bug collisions and level completion
+   - Toggleable in settings
 
-2. **Improved notification system** with styling and animations
+2. **Multiple Themes** to suit your preferences
+   - Dark theme (default)
+   - Light theme for better visibility
+   - Matrix theme for a retro feel
+
+3. **Difficulty Settings** to match your skill level
+   - Easy: Slower bugs, longer power-up duration
+   - Normal: Balanced gameplay
+   - Hard: Faster bugs, shorter power-up duration
+
+4. **Settings Panel** for customization
+   - Sound toggle
+   - Theme selection
+   - Difficulty adjustment
+   - Settings persist between sessions
+
+5. **Improved UI/UX**
    - Better visual feedback
-   - Notifications fade out after displaying
-
-3. **Random game over messages** related to Git concepts
-   - Makes the game more engaging and educational
-   - Ties into the Git theme of the game
-
-4. **Cherry-pick powerup** for auto-resolving conflicts
-   - New gameplay mechanic
-   - Allows automatic conflict resolution
-
-5. **Better UI feedback** when bugs are encountered
-   - Clear messaging about lives remaining
-   - More informative error modals
+   - Smooth transitions
+   - Persistent user preferences
+   - Responsive controls
 
 ## How to Play
 
